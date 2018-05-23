@@ -31,8 +31,10 @@ public class PessoaDAO {
 		PreparedStatement stmt = conexao.prepareStatement(sql);
 		ResultSet resultSet = stmt.executeQuery();
 		while(resultSet.next()) {
-			String nome = resultSet.getString("nome");
+			String id 	  = resultSet.getString("id");
+			String nome   = resultSet.getString("nome");
 			Pessoa pessoa = new Pessoa(nome);
+			pessoa.id = Integer.parseInt(id);
 			pessoas.add(pessoa);
 		}
 		resultSet.close();
