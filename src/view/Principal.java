@@ -6,9 +6,8 @@ import modelo.Pessoa;
 
 public class Principal {
 	public static void main(String[] args) throws SQLException {
-		for(Pessoa pessoa : PessoaDAO.listar()) {
-			System.out.println(pessoa.id + " - " + pessoa.nome);
-		}
+		Pessoa pessoa = PessoaDAO.encontrar(5);
+		pessoa.DAO().excluir();
 	}
 
 }

@@ -24,22 +24,41 @@ public class PessoaDAO {
         stmt.execute();
         stmt.close();
 	}
+
+	public void excluir() throws SQLException {
+		String sql = "DELETE FROM Pessoa WHERE id=?";
+        PreparedStatement stmt = conexao.prepareStatement(sql);
+        stmt.setInt(1, this.pessoa.id);
+        stmt.execute();
+        stmt.close();
+	}
 	
 	public static ArrayList<Pessoa> listar() throws SQLException {
 		ArrayList<Pessoa> pessoas = new ArrayList<Pessoa>();
 		String sql = "SELECT * FROM Pessoa";
 		PreparedStatement stmt = conexao.prepareStatement(sql);
 		ResultSet resultSet = stmt.executeQuery();
-		while(resultSet.next()) {
-			String id 	  = resultSet.getString("id");
-			String nome   = resultSet.getString("nome");
-			Pessoa pessoa = new Pessoa(nome);
-			pessoa.id = Integer.parseInt(id);
-			pessoas.add(pessoa);
-		}
+		while(resultSet.next()) 
+			pessoas.add(traduzir(resultSet));
 		resultSet.close();
         stmt.close();
         return pessoas;
+	}
+	
+	
+	public static Pessoa encontrar(int id) throws SQLException {
+		String sql = "SELECT * FROM Pessoa WHERE id = ?";
+		PreparedStatement stmt = conexao.prepareStatement(sql);
+		stmt.setInt(1, id);
+		ResultSet resultSet = stmt.executeQuery();
+		resultSet.next();
+        return traduzir(resultSet);
+	}
+	
+	public static Pessoa traduzir(ResultSet resultSet) throws SQLException {
+		Pessoa pessoa = new Pessoa(resultSet.getString("nome"));
+		pessoa.id = resultSet.getInt("id");
+        return pessoa;
 	}
 	
 }
