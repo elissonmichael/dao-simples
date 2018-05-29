@@ -18,51 +18,70 @@ public class PessoaDAO {
 		this.pessoa = pessoa;
 	}
 
-	public void salvar() throws SQLException {
+	public void salvar() {
 		String sql = "INSERT INTO Pessoa (nome) VALUES (?)";
-        PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        stmt.setString(1, this.pessoa.nome);
-        stmt.execute();
-        ResultSet resultSet = stmt.getGeneratedKeys();
-        if (resultSet.next())
-        	this.pessoa.id = resultSet.getInt(1);
-        stmt.close();
+		try {
+	        PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        stmt.setString(1, this.pessoa.nome);
+	        stmt.execute();
+	        ResultSet resultSet = stmt.getGeneratedKeys();
+	        if (resultSet.next())
+	        	this.pessoa.id = resultSet.getInt(1);
+	        stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void excluir() throws SQLException {
+	public void excluir() {
 		String sql = "DELETE FROM Pessoa WHERE id=?";
-        PreparedStatement stmt = conexao.prepareStatement(sql);
-        stmt.setInt(1, this.pessoa.id);
-        stmt.execute();
-        stmt.close();
+		try {
+	        PreparedStatement stmt = conexao.prepareStatement(sql);
+	        stmt.setInt(1, this.pessoa.id);
+	        stmt.execute();
+	        stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
-	public static ArrayList<Pessoa> listar() throws SQLException {
+	public static ArrayList<Pessoa> listar() {
 		ArrayList<Pessoa> pessoas = new ArrayList<Pessoa>();
 		String sql = "SELECT * FROM Pessoa";
-		PreparedStatement stmt = conexao.prepareStatement(sql);
-		ResultSet resultSet = stmt.executeQuery();
-		while(resultSet.next()) 
-			pessoas.add(traduzir(resultSet));
-		resultSet.close();
-        stmt.close();
-        return pessoas;
+		try {
+			PreparedStatement stmt = conexao.prepareStatement(sql);
+			ResultSet resultSet = stmt.executeQuery();
+			while(resultSet.next()) 
+				pessoas.add(objeto(resultSet));
+			resultSet.close();
+	        stmt.close();
+	        return pessoas;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
-	
-	
-	public static Pessoa encontrar(int id) throws SQLException {
+		
+	public static Pessoa encontrar(int id) {
 		String sql = "SELECT * FROM Pessoa WHERE id = ?";
-		PreparedStatement stmt = conexao.prepareStatement(sql);
-		stmt.setInt(1, id);
-		ResultSet resultSet = stmt.executeQuery();
-		resultSet.next();
-        return traduzir(resultSet);
+		try {
+			PreparedStatement stmt = conexao.prepareStatement(sql);
+			stmt.setInt(1, id);
+			ResultSet resultSet = stmt.executeQuery();
+			resultSet.next();
+	        return objeto(resultSet);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
-	private static Pessoa traduzir(ResultSet resultSet) throws SQLException {
-		Pessoa pessoa = new Pessoa(resultSet.getString("nome"));
-		pessoa.id = resultSet.getInt("id");
-        return pessoa;
+	private static Pessoa objeto(ResultSet resultSet) {
+		try {
+			Pessoa pessoa = new Pessoa(resultSet.getString("nome"));
+			pessoa.id = resultSet.getInt("id");
+	        return pessoa;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
-	
 }
