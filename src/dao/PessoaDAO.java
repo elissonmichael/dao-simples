@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import conexao.FabricaDeConexao;
@@ -19,9 +20,12 @@ public class PessoaDAO {
 
 	public void salvar() throws SQLException {
 		String sql = "INSERT INTO Pessoa (nome) VALUES (?)";
-        PreparedStatement stmt = conexao.prepareStatement(sql);
+        PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         stmt.setString(1, this.pessoa.nome);
         stmt.execute();
+        ResultSet resultSet = stmt.getGeneratedKeys();
+        if (resultSet.next())
+        	this.pessoa.id = resultSet.getInt(1);
         stmt.close();
 	}
 
@@ -55,7 +59,7 @@ public class PessoaDAO {
         return traduzir(resultSet);
 	}
 	
-	public static Pessoa traduzir(ResultSet resultSet) throws SQLException {
+	private static Pessoa traduzir(ResultSet resultSet) throws SQLException {
 		Pessoa pessoa = new Pessoa(resultSet.getString("nome"));
 		pessoa.id = resultSet.getInt("id");
         return pessoa;
