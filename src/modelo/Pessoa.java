@@ -10,6 +10,10 @@ public class Pessoa {
 		this.nome = nome;
 	}
 	
+	public String toString() {
+		return id + " - " + nome;
+	}
+	
 	public PessoaDAO DAO() {
 		return new PessoaDAO(this);
 	}	
