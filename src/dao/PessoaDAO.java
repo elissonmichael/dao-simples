@@ -19,17 +19,10 @@ public class PessoaDAO {
 	}
 
 	public void salvar() {
-		String sql = "INSERT INTO Pessoa (nome) VALUES (?)";
-		try {
-	        PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-	        stmt.setString(1, this.pessoa.nome);
-	        stmt.execute();
-	        ResultSet resultSet = stmt.getGeneratedKeys();
-	        if (resultSet.next())
-	        	this.pessoa.id = resultSet.getInt(1);
-	        stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
+		if(pessoa.id != 0) {
+			alterarRegistro();
+		} else {
+			criarRegistro();
 		}
 	}
 
@@ -37,7 +30,7 @@ public class PessoaDAO {
 		String sql = "DELETE FROM Pessoa WHERE id=?";
 		try {
 	        PreparedStatement stmt = conexao.prepareStatement(sql);
-	        stmt.setInt(1, this.pessoa.id);
+	        stmt.setInt(1, pessoa.id);
 	        stmt.execute();
 	        stmt.close();
 		} catch (SQLException e) {
@@ -80,6 +73,33 @@ public class PessoaDAO {
 			Pessoa pessoa = new Pessoa(resultSet.getString("nome"));
 			pessoa.id = resultSet.getInt("id");
 	        return pessoa;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private void criarRegistro() {
+		String sql = "INSERT INTO Pessoa (nome) VALUES (?)";
+		try {
+	        PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        stmt.setString(1, pessoa.nome);
+	        stmt.execute();
+	        ResultSet resultSet = stmt.getGeneratedKeys();
+	        if (resultSet.next()) pessoa.id = resultSet.getInt(1);
+	        stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private void alterarRegistro() {
+		String sql = "UPDATE Pessoa SET nome=? WHERE id=?";
+		try {
+	        PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        stmt.setString(1, pessoa.nome);
+	        stmt.setInt(2, pessoa.id);
+	        stmt.execute();
+	        stmt.close();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

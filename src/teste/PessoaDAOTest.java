@@ -24,11 +24,21 @@ class PessoaDAOTest {
 	}
 	
 	@Test
-	void testSalvar() {
+	void testSalvarEmUmaNovaInstanciaCriaUmNovoRegistro() {
 		Pessoa fulanoNoBanco = PessoaDAO.encontrar(fulano.id);
 		assertEquals(fulano.toString(), fulanoNoBanco.toString());
 	}
 
+	@Test
+	void testSalvarAposEdicaoAlteraRegistroExistente() {
+		int idAnterior = fulano.id;
+		fulano.nome = "Sicrano";
+		fulano.DAO().salvar();
+		Pessoa fulanoNoBanco = PessoaDAO.encontrar(fulano.id);
+		assertEquals(fulano.id, idAnterior);
+		assertEquals(fulano.toString(), fulanoNoBanco.toString());
+	}
+	
 	@Test
 	void testListar() {
 		ArrayList<String> pessoasNoBanco = new ArrayList<String>();
