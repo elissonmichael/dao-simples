@@ -11,16 +11,20 @@ import modelo.Pessoa;
 
 class PessoaDAOTest {
 	private Pessoa fulano;
-	
+	private Pessoa sicrano;
+
 	@BeforeEach
 	void setUp() {
 		fulano = new Pessoa("Fulano");		
 		fulano.DAO().salvar();
+		sicrano = new Pessoa("Sicrano");		
+		sicrano.DAO().salvar();
 	}
 	
 	@AfterEach
 	void tearDown() {
 		fulano.DAO().excluir();
+		sicrano.DAO().excluir();
 	}
 	
 	@Test
@@ -44,6 +48,17 @@ class PessoaDAOTest {
 		ArrayList<String> pessoasNoBanco = new ArrayList<String>();
 		for(Pessoa pessoa : PessoaDAO.listar())
 			pessoasNoBanco.add(pessoa.toString());
-		assertEquals(pessoasNoBanco, Arrays.asList(fulano.toString()));
+		assertEquals(Arrays.asList(fulano.toString(), 
+								   sicrano.toString()),
+					 pessoasNoBanco);
+	}
+	
+	@Test
+	void testFiltro() {
+		ArrayList<String> pessoasNoBanco = new ArrayList<String>();
+		for(Pessoa pessoa : PessoaDAO.filtrar("nome", "Fulano"))
+			pessoasNoBanco.add(pessoa.toString());
+		assertEquals(Arrays.asList(fulano.toString()), 
+					 pessoasNoBanco);
 	}
 }
