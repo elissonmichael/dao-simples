@@ -54,7 +54,24 @@ public class PessoaDAO {
 		}
 
 	}
-		
+
+	public static ArrayList<Pessoa> filtrar(String campo, String valor) {
+		ArrayList<Pessoa> pessoas = new ArrayList<Pessoa>();
+		String sql = "SELECT * FROM Pessoa WHERE "+ campo +" LIKE ?";
+		try {
+			PreparedStatement stmt = conexao.prepareStatement(sql);
+			stmt.setString(1, '%' + valor + '%');
+			ResultSet resultSet = stmt.executeQuery();
+			while(resultSet.next()) 
+				pessoas.add(objeto(resultSet));
+			resultSet.close();
+	        stmt.close();
+	        return pessoas;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public static Pessoa encontrar(int id) {
 		String sql = "SELECT * FROM Pessoa WHERE id = ?";
 		try {
